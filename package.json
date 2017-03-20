@@ -1,0 +1,45 @@
+{
+    "name": "dakaraphi-foldplus",
+    "displayName": "dakaraphi-foldplus",
+    "description": "Additional fold commands",
+    "version": "0.0.1",
+    "publisher": "Dakara",
+    "engines": {
+        "vscode": "^1.9.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onCommand:dakara-foldplus.levelAtCursor",
+        "onCommand:dakara-foldplus.selection",
+        "onCommand:dakara-foldplus.selection.exclude"
+    ],
+    "main": "./out/src/extension",
+    "contributes": {
+        "commands": [{
+            "command": "dakara-foldplus.levelAtCursor",
+            "title": "Fold All Same Level as Cursor"
+        },
+        {   "command": "dakara-foldplus.selection",
+            "title": "Fold All with Selected Text"
+        },
+        {
+            "command": "dakara-foldplus.selection.exclude",
+            "title": "Fold All keep Selected Text"
+        }]
+    },
+    "scripts": {
+        "vscode:prepublish": "tsc -p ./",
+        "compile": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^2.2.1",
+        "vscode": "^1.1.0",
+        "mocha": "^2.3.3",
+        "@types/node": "^6.0.40",
+        "@types/mocha": "^2.2.32"
+    }
+}
