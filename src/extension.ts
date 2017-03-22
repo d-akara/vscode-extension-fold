@@ -16,9 +16,18 @@ export function activate(context: vscode.ExtensionContext) {
         const textEditor = vscode.window.activeTextEditor;   
         const selection = textEditor.selection;
         const textForFold = textOfSelectionOrWordAtCursor(textEditor.document, selection);
+        let endOfPreviousRegion = 0;
         findAllLineNumbersContaining(textEditor.document, textForFold).forEach( lineNumber => {
-            textEditor.selection = new vscode.Selection(lineNumber, 0, lineNumber, 0);
-            vscode.commands.executeCommand('editor.fold');
+            console.log('line containing match: ' + lineNumber + ' end of previous' + endOfPreviousRegion);
+            const foldingRegion = makeRangeFromFoldingRegion(textEditor.document, lineNumber, +textEditor.options.tabSize);
+            console.log('folding region' + foldingRegion.start.line + ' : ' + foldingRegion.end.line);
+            // TODO have option to fold with selected at same level or not fold sub regions
+            if ((lineNumber > endOfPreviousRegion) && (foldingRegion.end.line - foldingRegion.start.line > 1)) {
+                endOfPreviousRegion = foldingRegion.end.line;
+                console.log('folding: ' + lineNumber);
+                textEditor.selection = new vscode.Selection(lineNumber, 0, lineNumber, 0);
+                vscode.commands.executeCommand('editor.fold');
+            }
         });
     });
     context.subscriptions.push(disposable);
@@ -49,6 +58,25 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(disposable);
     
+}
+
+function makeRangeFromFoldingRegion(document: vscode.TextDocument, lineNumber: number, tabSize: number) {
+    const endFoldLine = findNextLineDownSameLevelOrLess(document, lineNumber, tabSize);
+    return new vscode.Range(lineNumber, 0, endFoldLine.lineNumber, 0);
+}
+
+function findNextLineDownSameLevelOrLess(document: vscode.TextDocument, lineNumber: number, tabSize: number) {
+    const line = document.lineAt(lineNumber);
+    const documentLength = document.lineCount;
+    let lastSpacing = calculateLineOffsetSpacing(line.text, tabSize);
+    for(let index = lineNumber + 1; index < documentLength; index++) {
+        const nextLine = document.lineAt(index);
+        if ( nextLine.text.length ) {
+            const currentSpacing = calculateLineOffsetSpacing(nextLine.text, tabSize);
+            if (currentSpacing <= lastSpacing) return nextLine;
+        }
+    }
+    return null;    
 }
 
 function textOfSelectionOrWordAtCursor(document: vscode.TextDocument, selection: vscode.Selection) {
