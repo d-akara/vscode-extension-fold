@@ -1,6 +1,9 @@
 'use strict';
 import * as vscode from 'vscode';
-
+// TODO new commands:
+// - Fold all below cursor line
+// - Fold all above cursor line
+// - Fold all keep cursor line
 export function activate(context: vscode.ExtensionContext) {
 
     let disposable = vscode.commands.registerCommand('dakara-foldplus.levelAtCursor', () => {
@@ -17,17 +20,20 @@ export function activate(context: vscode.ExtensionContext) {
         const selection = textEditor.selection;
         const textForFold = textOfSelectionOrWordAtCursor(textEditor.document, selection);
         let endOfPreviousRegion = 0;
+        const promises = [];
         findAllLineNumbersContaining(textEditor.document, textForFold).forEach( lineNumber => {
-            console.log('line containing match: ' + lineNumber + ' end of previous' + endOfPreviousRegion);
             const foldingRegion = makeRangeFromFoldingRegion(textEditor.document, lineNumber, +textEditor.options.tabSize);
-            console.log('folding region' + foldingRegion.start.line + ' : ' + foldingRegion.end.line);
             // TODO have option to fold with selected at same level or not fold sub regions
             if ((lineNumber > endOfPreviousRegion) && (foldingRegion.end.line - foldingRegion.start.line > 1)) {
                 endOfPreviousRegion = foldingRegion.end.line;
-                console.log('folding: ' + lineNumber);
                 textEditor.selection = new vscode.Selection(lineNumber, 0, lineNumber, 0);
-                vscode.commands.executeCommand('editor.fold');
+                promises.push(vscode.commands.executeCommand('editor.fold'));
             }
+        });
+
+        Promise.all(promises).then(() => {
+            textEditor.selection = selection;
+            textEditor.revealRange(textEditor.selection);
         });
     });
     context.subscriptions.push(disposable);
@@ -120,7 +126,7 @@ function findLineNextLevelUp(textEditor: vscode.TextEditor, lineNumber: number) 
     const line = textEditor.document.lineAt(lineNumber);
     const tabSize = +textEditor.options.tabSize;
     let lastSpacing = calculateLineOffsetSpacing(line.text, tabSize);
-    for(let index = lineNumber; index > 0; index--) {
+    for(let index = lineNumber; index >= 0; index--) {
         const line = textEditor.document.lineAt(index);
         if ( line.text.length ) {
             const currentSpacing = calculateLineOffsetSpacing(line.text, tabSize);

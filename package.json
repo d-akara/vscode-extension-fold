@@ -1,8 +1,8 @@
 {
-    "name": "dakaraphi-foldplus",
-    "displayName": "dakaraphi-foldplus",
+    "name": "dakara-foldplus",
+    "displayName": "dakara-foldplus",
     "description": "Additional fold commands",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "publisher": "Dakara",
     "engines": {
         "vscode": "^1.9.0"
