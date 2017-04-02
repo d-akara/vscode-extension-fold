@@ -8,7 +8,7 @@
         "type": "git",
         "url": "https://github.com/dakaraphi/vscode-extension-fold"
     },    
-    "publisher": "Dakara",
+    "publisher": "dakara",
     "engines": {
         "vscode": "^1.9.0"
     },
