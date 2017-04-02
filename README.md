@@ -1,4 +1,4 @@
-# dakara-foldplus
+# Fold Plus
 
 Additional Fold Commands for VS Code
 

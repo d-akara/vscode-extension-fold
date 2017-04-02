@@ -1,8 +1,13 @@
 {
     "name": "dakara-foldplus",
-    "displayName": "dakara-foldplus",
+    "displayName": "Fold Plus",
     "description": "Additional fold commands",
     "version": "1.0.0",
+    "icon": "fold-plus.svg",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dakaraphi/vscode-extension-fold"
+    },    
     "publisher": "Dakara",
     "engines": {
         "vscode": "^1.9.0"
