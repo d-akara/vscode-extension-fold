@@ -2,7 +2,7 @@
     "name": "dakara-foldplus",
     "displayName": "Fold Plus",
     "description": "Additional fold commands",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "icon": "fold-plus.svg",
     "repository": {
         "type": "git",
