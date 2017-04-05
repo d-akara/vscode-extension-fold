@@ -13,17 +13,20 @@ export function activate(context: vscode.ExtensionContext) {
         const selection = textEditor.selection;
         const level = edit.calculateLineLevel(textEditor, selection.anchor.line);
         vscode.commands.executeCommand('editor.foldLevel' + level);
-        vscode.commands.executeCommand('editor.fold');
+
+        // Fold current line if it is a foldable line.  If we don't check, vscode will fold parent.
+        if (edit.isNextLineDownHigherLevel(textEditor.document, selection.anchor.line, +textEditor.options.tabSize))
+            vscode.commands.executeCommand('editor.fold');
     });
     context.subscriptions.push(disposable);
 
     disposable = vscode.commands.registerCommand('dakara-foldplus.selection', () => {
         const textEditor = vscode.window.activeTextEditor;   
         const selection = textEditor.selection;
-        const textForFold = edit.textOfSelectionOrWordAtCursor(textEditor.document, selection);
-        let endOfPreviousRegion = 0;
+        const regExForFold = edit.makeRegExpToMatchWordUnderCursorOrSelection(textEditor.document, selection);
+        let endOfPreviousRegion = -1;
         const promises = [];
-        edit.findAllLineNumbersContaining(textEditor.document, textForFold).forEach( lineNumber => {
+        edit.findAllLineNumbersContaining(textEditor.document, regExForFold).forEach( lineNumber => {
             const foldingRegion = edit.makeRangeFromFoldingRegion(textEditor.document, lineNumber, +textEditor.options.tabSize);
             // TODO have option to fold with selected at same level or not fold sub regions
             if ((lineNumber > endOfPreviousRegion) && (foldingRegion.end.line - foldingRegion.start.line > 1)) {
@@ -45,9 +48,9 @@ export function activate(context: vscode.ExtensionContext) {
         const selection = textEditor.selection;       
         vscode.commands.executeCommand('editor.foldAll').then(()=>{
             const promises = [];
-            const textForFold = edit.textOfSelectionOrWordAtCursor(textEditor.document, selection);
+            const regExForFold = edit.makeRegExpToMatchWordUnderCursorOrSelection(textEditor.document, selection);
             const linesToUnfold = new Set<number>();
-            edit.findAllLineNumbersContaining(textEditor.document, textForFold).forEach( lineNumber => {
+            edit.findAllLineNumbersContaining(textEditor.document, regExForFold).forEach( lineNumber => {
                 textEditor.selection = new vscode.Selection(lineNumber, 0, lineNumber, 0);
                 edit.findLinesByLevelToRoot(textEditor, lineNumber).forEach(line => {
                     linesToUnfold.add(line.lineNumber);
