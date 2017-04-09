@@ -20,13 +20,13 @@ export function activate(context: vscode.ExtensionContext) {
         const excludedLines = edit.findAllLinesContainingCurrentWordOrSelection();
         fold.foldAllExcept(excludedLines);
     });
+    context.subscriptions.push(disposable);
 
     disposable = vscode.commands.registerCommand('dakara-foldplus.cursor.exclude', () => {
         const textEditor = vscode.window.activeTextEditor;
         const selection = textEditor.selection;        
         fold.foldAllExcept([selection.anchor.line]);
     });
-
     context.subscriptions.push(disposable);
 
 }
