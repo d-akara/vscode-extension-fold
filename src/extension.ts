@@ -1,6 +1,6 @@
 'use strict';
 import * as vscode from 'vscode';
-import * as edit from './common/EditorFunctions';
+import * as edit from 'vscode-extension-common';
 import * as fold from './Fold';
 
 export function activate(context: vscode.ExtensionContext) {
