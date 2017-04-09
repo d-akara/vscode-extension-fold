@@ -10,3 +10,5 @@ Determines the level of the line with the active cursor and executes a fold of t
 Folds the entire document matching the selected text or the word under the cursor.
 ## Fold All keep Selected Text
 Folds the entire document except sections with text matching current selection or current word under the cursor.
+## Fold All keep Cursor Line
+Folds the entire document except the current line with cursor.

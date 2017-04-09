@@ -2,7 +2,7 @@
     "name": "dakara-foldplus",
     "displayName": "Fold Plus",
     "description": "Additional fold commands",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "icon": "fold-plus.svg",
     "repository": {
         "type": "git",
@@ -18,7 +18,8 @@
     "activationEvents": [
         "onCommand:dakara-foldplus.levelAtCursor",
         "onCommand:dakara-foldplus.selection",
-        "onCommand:dakara-foldplus.selection.exclude"
+        "onCommand:dakara-foldplus.selection.exclude",
+        "onCommand:dakara-foldplus.cursor.exclude"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -32,6 +33,10 @@
         {
             "command": "dakara-foldplus.selection.exclude",
             "title": "Fold All keep Selected Text"
+        },
+        {
+            "command": "dakara-foldplus.cursor.exclude",
+            "title": "Fold All keep Cursor Line"
         }]
     },
     "scripts": {
