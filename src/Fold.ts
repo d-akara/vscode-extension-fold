@@ -2,11 +2,23 @@
 import * as vscode from 'vscode';
 import * as edit from 'vscode-extension-common';
 
-export function foldUsingLevelOfCursorLine() {
+export function foldLevelOfParent() {
     const textEditor = vscode.window.activeTextEditor;
     const selection = textEditor.selection;
-    const level = edit.calculateLineLevel(textEditor, selection.anchor.line);
+    const parentLine = edit.findNextLineUpSpacedLeft(textEditor, textEditor.selection.active.line);
+    const level = edit.calculateLineLevel(textEditor, parentLine.lineNumber);
+
+    textEditor.selection = new vscode.Selection(parentLine.lineNumber, 0, parentLine.lineNumber, 0);
+    vscode.commands.executeCommand('editor.foldLevel' + level)
+        .then(()=> vscode.commands.executeCommand('editor.fold'));
+}
+
+export function foldLevelOfCursor() {
+    const textEditor = vscode.window.activeTextEditor;
+    const selection = textEditor.selection;
     const promises = [];
+
+    const level = edit.calculateLineLevel(textEditor, selection.anchor.line);
     promises.push(vscode.commands.executeCommand('editor.foldLevel' + level));
 
     // Fold current line if it is a foldable line.  If we don't check, vscode will fold parent.
@@ -20,6 +32,14 @@ export function foldUsingLevelOfCursorLine() {
     })    
 }
 
+export function foldChildren() {
+    const textEditor = vscode.window.activeTextEditor;
+    const selection = textEditor.selection;
+    const promises = [];
+    const linesToFold = edit.findAllLinesSpacedOneLevelRight(textEditor.document, selection.active.line, +textEditor.options.tabSize);
+    foldLines(linesToFold.map(line=>line.lineNumber));
+}
+
 export function foldLines(foldLines: Array<number>) {
     const textEditor = vscode.window.activeTextEditor;
     const selection = textEditor.selection;
@@ -27,7 +47,6 @@ export function foldLines(foldLines: Array<number>) {
     let endOfPreviousRegion = -1;
     const promises = [];
     foldLines.forEach(lineNumber => {
-        console.log('line containing ' + lineNumber);
         const foldingRegion = edit.makeRangeFromFoldingRegion(textEditor.document, lineNumber, +textEditor.options.tabSize);
         // Are we outside previous fold and is current line foldable
         // Executing fold on a non-foldable line will fold the parent

@@ -1,3 +1,8 @@
+## [1.2.0]
+- New command 'Fold All Same Level As Parent'
+- New command 'Fold Parent'
+- New command 'Fold Children'
+
 ## [1.1.0]
 - New command 'Fold All keep Cursor Line'
 - Word highlighting now restored after fold
