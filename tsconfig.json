@@ -7,7 +7,11 @@
             "es6"
         ],
         "sourceMap": true,
-        "rootDir": "."
+        "rootDir": ".",
+        "baseUrl": "",
+        "paths": {
+            "vscode": ["node_modules/vscode"]
+        }
     },
     "exclude": [
         "node_modules",
