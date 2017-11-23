@@ -2,42 +2,59 @@
     "name": "dakara-foldplus",
     "displayName": "Fold Plus",
     "description": "Additional fold commands",
-    "version": "1.1.0",
-    "icon": "fold-plus.svg",
+    "version": "1.2.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/dakaraphi/vscode-extension-fold"
-    },    
+    },
     "publisher": "dakara",
     "engines": {
-        "vscode": "^1.9.0"
+        "vscode": "^1.18.0"
     },
     "categories": [
         "Other"
     ],
     "activationEvents": [
         "onCommand:dakara-foldplus.levelAtCursor",
+        "onCommand:dakara-foldplus.levelOfParent",
+        "onCommand:dakara-foldplus.parent",
+        "onCommand:dakara-foldplus.children",
         "onCommand:dakara-foldplus.selection",
         "onCommand:dakara-foldplus.selection.exclude",
         "onCommand:dakara-foldplus.cursor.exclude"
     ],
     "main": "./out/src/extension",
     "contributes": {
-        "commands": [{
-            "command": "dakara-foldplus.levelAtCursor",
-            "title": "Fold All Same Level as Cursor"
-        },
-        {   "command": "dakara-foldplus.selection",
-            "title": "Fold All with Selected Text"
-        },
-        {
-            "command": "dakara-foldplus.selection.exclude",
-            "title": "Fold All keep Selected Text"
-        },
-        {
-            "command": "dakara-foldplus.cursor.exclude",
-            "title": "Fold All keep Cursor Line"
-        }]
+        "commands": [
+            {
+                "command": "dakara-foldplus.levelAtCursor",
+                "title": "Fold All Same Level as Cursor"
+            },
+            {
+                "command": "dakara-foldplus.levelOfParent",
+                "title": "Fold All Same Level as Parent"
+            },
+            {
+                "command": "dakara-foldplus.parent",
+                "title": "Fold Parent"
+            },
+            {
+                "command": "dakara-foldplus.children",
+                "title": "Fold Children"
+            },
+            {
+                "command": "dakara-foldplus.selection",
+                "title": "Fold All with Selected Text"
+            },
+            {
+                "command": "dakara-foldplus.selection.exclude",
+                "title": "Fold All keep Selected Text"
+            },
+            {
+                "command": "dakara-foldplus.cursor.exclude",
+                "title": "Fold All keep Cursor Line"
+            }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
@@ -46,8 +63,8 @@
         "test": "node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
-        "typescript": "^2.2.1",
-        "vscode": "^1.1.0",
+        "typescript": "^2.5.3",
+        "vscode": "^1.1.5",
         "mocha": "^2.3.3",
         "@types/node": "^6.0.40",
         "@types/mocha": "^2.2.32"
