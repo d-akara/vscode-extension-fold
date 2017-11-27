@@ -37,7 +37,7 @@ export function foldChildren() {
     const selection = textEditor.selection;
     const promises = [];
     const linesToFold = edit.findAllLinesSpacedOneLevelRight(textEditor.document, selection.active.line, +textEditor.options.tabSize);
-    foldLines(linesToFold.map(line=>line.lineNumber));
+    foldLines(linesToFold.filter(line=>edit.isNextLineDownSpacedRight(textEditor.document,line.lineNumber, +textEditor.options.tabSize)).map(line=>line.lineNumber));
 }
 
 export function foldLines(foldLines: Array<number>) {

@@ -1,3 +1,6 @@
+## [1.2.1]
+- Fix 'Fold Children' folding parent when there are non foldable children
+
 ## [1.2.0]
 - New command 'Fold All Same Level As Parent'
 - New command 'Fold Parent'
