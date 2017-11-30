@@ -43,7 +43,6 @@ export function foldChildren() {
 export function foldLines(foldLines: Array<number>) {
     const textEditor = vscode.window.activeTextEditor;
     const selection = textEditor.selection;
-    const regExForFold = edit.makeRegExpToMatchWordUnderCursorOrSelection(textEditor.document, selection);
     let endOfPreviousRegion = -1;
     const promises = [];
     foldLines.forEach(lineNumber => {

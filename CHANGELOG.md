@@ -1,3 +1,6 @@
+## [1.2.2]
+- Fix bug when cursor next to non word character when executing some fold commands
+
 ## [1.2.1]
 - Fix 'Fold Children' folding parent when there are non foldable children
 
