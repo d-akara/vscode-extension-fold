@@ -4,6 +4,9 @@ Additional Fold Commands for VS Code
 
 ![ScreenShot](fold-cursor-selected-keep.gif)
 
+## Toggle Indentation/Language Folding
+Toggles between `indentation` and `language` folding.  VS Code 1.22 introduced `language` folding which does not support the features of Fold Plus.
+This command is provided to easily toggle between each mode.
 ## Fold All Same Level as Cursor
 Determines the level of the line with the active cursor and executes a fold of the entire document at that level.
 ## Fold All Same Level as Parent
