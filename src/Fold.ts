@@ -5,7 +5,8 @@ import {Lines, Region, View} from 'vscode-extension-common';
 export function foldLevelOfParent() {
     const textEditor = vscode.window.activeTextEditor;
     const selection = textEditor.selection;
-    const parentLine = Lines.findNextLineUpSpacedLeft(textEditor.document, textEditor.selection.active.line, +textEditor.options.tabSize);
+    const lineOfReferenceForFold = whenBlankLineUsePreviousOrNextLine(textEditor, selection.anchor.line)
+    const parentLine = Lines.findNextLineUpSpacedLeft(textEditor.document, lineOfReferenceForFold, +textEditor.options.tabSize);
     const level = Lines.calculateLineLevel(textEditor, parentLine.lineNumber);
 
     textEditor.selection = new vscode.Selection(parentLine.lineNumber, 0, parentLine.lineNumber, 0);
@@ -18,11 +19,13 @@ export function foldLevelOfCursor() {
     const selection = textEditor.selection;
     const promises = [];
 
-    const level = Lines.calculateLineLevel(textEditor, selection.anchor.line);
+    const lineOfReferenceForFold = whenBlankLineUsePreviousOrNextLine(textEditor, selection.anchor.line)
+
+    const level = Lines.calculateLineLevel(textEditor, lineOfReferenceForFold);
     promises.push(vscode.commands.executeCommand('editor.foldLevel' + level));
 
     // Fold current line if it is a foldable line.  If we don't check, vscode will fold parent.
-    if (Lines.isNextLineDownSpacedRight(textEditor.document, selection.anchor.line, +textEditor.options.tabSize))
+    if (Lines.isNextLineDownSpacedRight(textEditor.document, lineOfReferenceForFold, +textEditor.options.tabSize))
         promises.push(vscode.commands.executeCommand('editor.fold'));
 
     // Restore selection
@@ -87,4 +90,25 @@ export function foldAllExcept(excludedLines: Array<number>) {
         textEditor.revealRange(textEditor.selection, vscode.TextEditorRevealType.InCenter);
         View.triggerWordHighlighting();
     });
+}
+
+/**
+ * If the line on which the command is executed is blank, then we want to use either the 
+ * previous line or next line with text to determine the correct level.
+ * In this event, whichever line (previous or next) is the higher level (further right) will be used.
+ * 
+ * @param editor 
+ * @param line 
+ */
+function whenBlankLineUsePreviousOrNextLine(editor:vscode.TextEditor, line:number) {
+    const currentLine = editor.document.lineAt(line)
+    if (!currentLine.isEmptyOrWhitespace) return line
+
+    const nextLineup   = Lines.findNextLineUp(  editor.document, line, line => !line.isEmptyOrWhitespace)
+    const nextLineDown = Lines.findNextLineDown(editor.document, line, line => !line.isEmptyOrWhitespace)
+
+    const lineUpLevel   = Lines.calculateLineLevel(editor, nextLineup.lineNumber)
+    const lineDownLevel = Lines.calculateLineLevel(editor, nextLineDown.lineNumber)
+
+    return lineUpLevel > lineDownLevel ? nextLineup.lineNumber : nextLineDown.lineNumber
 }
