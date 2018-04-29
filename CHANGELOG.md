@@ -1,3 +1,7 @@
+## 1.3.1
+- Improved fold behavior when executed on a blank line for `same level as parent` and `same level as cursor`
+  - when on a blank line, the previous line with text or next line of text will be used to calculate folding level
+  
 ## 1.3.0
 - Added convenience toggle command to toggle between `indentation` and `language` folding strategies
   - VSCode 1.22+ new language folding does not have the API's available to allow Fold Plus to work correctly in `language` folding mode.  This command is provided to make it easier to toggle between the modes when using Fold Plus. [Issue for reference 47404](https://github.com/Microsoft/vscode/issues/47404)
