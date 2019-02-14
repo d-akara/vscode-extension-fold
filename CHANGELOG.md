@@ -1,3 +1,6 @@
+## 1.3.2
+- Fix compatibility issues with VSCode 1.31
+  
 ## 1.3.1
 - Improved fold behavior when executed on a blank line for `same level as parent` and `same level as cursor`
   - when on a blank line, the previous line with text or next line of text will be used to calculate folding level
