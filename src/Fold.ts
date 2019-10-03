@@ -22,16 +22,23 @@ export function foldLevelOfCursor() {
     const lineOfReferenceForFold = whenBlankLineUsePreviousOrNextLine(textEditor, selection.anchor.line)
 
     const level = Lines.calculateLineLevel(textEditor, lineOfReferenceForFold);
-    promises.push(vscode.commands.executeCommand('editor.foldLevel' + level));
 
-    // Fold current line if it is a foldable line.  If we don't check, vscode will fold parent.
-    if (Lines.isNextLineDownSpacedRight(textEditor.document, lineOfReferenceForFold, +textEditor.options.tabSize))
-        promises.push(vscode.commands.executeCommand('editor.fold'));
+    if (level < 8) {
+        promises.push(vscode.commands.executeCommand('editor.foldLevel' + level));
 
-    // Restore selection
-    Promise.all(promises).then(() => {
-        textEditor.selection = selection;
-    })    
+        // Fold current line if it is a foldable line.  If we don't check, vscode will fold parent.
+        if (Lines.isNextLineDownSpacedRight(textEditor.document, lineOfReferenceForFold, +textEditor.options.tabSize))
+            promises.push(vscode.commands.executeCommand('editor.fold'));
+
+        // Restore selection
+        Promise.all(promises).then(() => {
+            textEditor.selection = selection;
+        })    
+    } else {
+        const linesToFold = linesByLevel(textEditor, level)
+        foldLines(linesToFold)
+    }
+
 }
 
 export function foldChildren() {
@@ -49,11 +56,11 @@ export async function foldLines(foldLines: Array<number>) {
         const foldingRegion = Region.makeRangeFromFoldingRegion(textEditor.document, lineNumber, +textEditor.options.tabSize);
         // Are we outside previous fold and is current line foldable
         // Executing fold on a non-foldable line will fold the parent
-        if ((lineNumber > endOfPreviousRegion) && (foldingRegion.end.line - foldingRegion.start.line > 1)) {
+        if ((lineNumber > endOfPreviousRegion) && (foldingRegion.end.line !== lineNumber)) {
             endOfPreviousRegion = foldingRegion.end.line;
             textEditor.selection = new vscode.Selection(lineNumber, 0, lineNumber, 0);
             await vscode.commands.executeCommand('editor.fold')
-            //console.log('folding ' + textEditor.selection.anchor.line);
+            console.log('folding ' + textEditor.selection.anchor.line);
         }
     }
     textEditor.selection = selection;
@@ -102,4 +109,16 @@ function whenBlankLineUsePreviousOrNextLine(editor:vscode.TextEditor, line:numbe
     const lineDownLevel = Lines.calculateLineLevel(editor, nextLineDown.lineNumber)
 
     return lineUpLevel > lineDownLevel ? nextLineup.lineNumber : nextLineDown.lineNumber
+}
+
+function linesByLevel(editor:vscode.TextEditor, level: number) {
+    const linesToFold = []
+    const levels = Lines.calculateAllLineLevels(editor, +editor.options.tabSize)
+    levels.forEach((lineLevel, lineNumber) => {
+        if (lineLevel === level) {
+            linesToFold.push(lineNumber)
+        }
+    })
+
+    return linesToFold
 }
