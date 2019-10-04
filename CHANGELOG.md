@@ -1,3 +1,8 @@
+## 1.4.0
+- Folding by level now supports unlimited depth
+  - previously limited by vscode 7 levels of builtin commands
+- Fixed several issues where folding may not work when folding regions are close together or at end of document
+
 ## 1.3.2
 - Fix compatibility issues with VSCode 1.31
   
