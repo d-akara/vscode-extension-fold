@@ -1,3 +1,6 @@
+## 1.4.1
+- Fixed issue with fold by selection when selection contained characters that may be interpreted as regular expression
+
 ## 1.4.0
 - Folding by level now supports unlimited depth
   - previously limited by vscode 7 levels of builtin commands

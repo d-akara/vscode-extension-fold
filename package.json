@@ -2,7 +2,7 @@
     "name": "dakara-foldplus",
     "displayName": "Fold Plus",
     "description": "Additional fold commands",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "icon": "foldplus_icon.png",
     "repository": {
         "type": "git",
@@ -73,16 +73,14 @@
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
         "compile": "tsc -watch -p ./",
-        "compile_common": "tsc -watch -p ../vscode-extension-common",        
+        "compile_common": "tsc -watch -p ../vscode-extension-common",
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
-        "typescript": "^2.8.1",
-        "vscode": "^1.1.5",
-        "mocha": "^2.3.3",
-        "@types/node": "^6.0.40",
-        "@types/mocha": "^2.2.32"
+        "typescript": "^3.9.7",
+        "vscode": "^1.1.37",
+        "@types/node": "^14.0.27"
     },
     "dependencies": {
         "vscode-extension-common": "file:../vscode-extension-common"
