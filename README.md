@@ -21,3 +21,9 @@ Folds the entire document except the current line with cursor.
 Fold parent of current line
 ## Fold Children
 Fold all children of current line
+## Unfold All Lines Matching...
+Unfold all lines matching a regex
+## Unfold All Same Level as Cursor
+Unfold all lines same level as cursor line
+## Unfold All with Selected Text
+Unfold all lines containing the current selected text

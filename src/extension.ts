@@ -1,64 +1,85 @@
 'use strict';
 import * as vscode from 'vscode';
-import { Application, Lines } from 'vscode-extension-common';
+import { Application, Lines, Modify, View } from 'vscode-extension-common';
 import * as fold from './Fold';
 
 export function activate(context: vscode.ExtensionContext) {
 
-    let disposable = vscode.commands.registerCommand('dakara-foldplus.levelAtCursor', () => {
+    Application.registerCommand(context,'dakara-foldplus.levelAtCursor', () => {
         warnFoldStrategy()
         fold.foldLevelOfCursor();
     });
-    context.subscriptions.push(disposable);
 
-    disposable = vscode.commands.registerCommand('dakara-foldplus.levelOfParent', () => {
+    Application.registerCommand(context,'dakara-foldplus.levelAtCursor.unfold', () => {
+        warnFoldStrategy()
+        fold.unfoldLevelOfCursor();
+    });
+
+    Application.registerCommand(context,'dakara-foldplus.levelOfParent', () => {
         warnFoldStrategy()
         fold.foldLevelOfParent();
     });
-    context.subscriptions.push(disposable);
 
-    disposable = vscode.commands.registerCommand('dakara-foldplus.children', () => {
+    Application.registerCommand(context,'dakara-foldplus.children', () => {
         warnFoldStrategy()
         fold.foldChildren();
     });
-    context.subscriptions.push(disposable);
 
-    disposable = vscode.commands.registerCommand('dakara-foldplus.parent', () => {
+    Application.registerCommand(context,'dakara-foldplus.parent', () => {
         warnFoldStrategy()
         const textEditor = vscode.window.activeTextEditor;
         const parentLine = Lines.findNextLineUpSpacedLeft(textEditor.document, textEditor.selection.active.line, +textEditor.options.tabSize);
         textEditor.selection = new vscode.Selection(parentLine.lineNumber, 0, parentLine.lineNumber, 0);
         vscode.commands.executeCommand('editor.fold');
     });
-    context.subscriptions.push(disposable);
 
-    disposable = vscode.commands.registerCommand('dakara-foldplus.selection', () => {
+    Application.registerCommand(context,'dakara-foldplus.selection', () => {
         warnFoldStrategy()
         const foldLines = Lines.findAllLinesContainingCurrentWordOrSelection();
         fold.foldLines(foldLines);
     });
-    context.subscriptions.push(disposable);
 
-    disposable = vscode.commands.registerCommand('dakara-foldplus.selection.exclude', () => {
+    Application.registerCommand(context,'dakara-foldplus.selection.unfold', async () => {
+        warnFoldStrategy()
+        const foldLines = Lines.findAllLinesContainingCurrentWordOrSelection();
+        const regexUnfold = Lines.makeRegExpToMatchWordUnderCursorOrSelection(vscode.window.activeTextEditor.document, vscode.window.activeTextEditor.selection)
+        await fold.unfoldLines(foldLines, false);
+
+        View.moveCursorForwardUntilMatch(vscode.window.activeTextEditor, regexUnfold)
+        View.triggerWordHighlighting()
+    });
+
+    Application.registerCommand(context,'dakara-foldplus.regex.unfold', async () => {
+        warnFoldStrategy()
+        const userInput = await vscode.window.showInputBox({prompt:'regex to unfold lines', value: ''});
+        const regexUnfold = new RegExp(userInput)
+        const foldLines = Lines.findAllLineNumbersContaining(vscode.window.activeTextEditor.document, regexUnfold);
+        if (foldLines.length) {
+            await fold.unfoldLines(foldLines, true);
+            View.moveCursorForwardUntilMatch(vscode.window.activeTextEditor, regexUnfold)
+            View.triggerWordHighlighting()
+        } else {
+            vscode.window.showWarningMessage("No lines found with '" + userInput + "'")
+        }
+    });
+
+    Application.registerCommand(context,'dakara-foldplus.selection.exclude', () => {
         warnFoldStrategy()
         const excludedLines = Lines.findAllLinesContainingCurrentWordOrSelection();
         fold.foldAllExcept(excludedLines);
     });
-    context.subscriptions.push(disposable);
 
-    disposable = vscode.commands.registerCommand('dakara-foldplus.cursor.exclude', () => {
+    Application.registerCommand(context,'dakara-foldplus.cursor.exclude', () => {
         warnFoldStrategy()
         const textEditor = vscode.window.activeTextEditor;
         const selection = textEditor.selection;        
         fold.foldAllExcept([selection.anchor.line]);
     });
-    context.subscriptions.push(disposable);
 
-    disposable = vscode.commands.registerCommand('dakara-foldplus.toggle.indentation', async () => {
+    Application.registerCommand(context,'dakara-foldplus.toggle.indentation', async () => {
         const newValue = await Application.settingsCycleNext('editor', 'foldingStrategy', ['auto', 'indentation'])
         vscode.window.showInformationMessage('Set Folding Strategy: ' + newValue)
     });
-    context.subscriptions.push(disposable);
 
 }
 

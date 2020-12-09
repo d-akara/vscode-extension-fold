@@ -2,7 +2,7 @@
     "name": "dakara-foldplus",
     "displayName": "Fold Plus",
     "description": "Additional fold commands",
-    "version": "1.4.1",
+    "version": "1.5.0",
     "icon": "foldplus_icon.png",
     "repository": {
         "type": "git",
@@ -17,9 +17,12 @@
     ],
     "activationEvents": [
         "onCommand:dakara-foldplus.levelAtCursor",
+        "onCommand:dakara-foldplus.levelAtCursor.unfold",
         "onCommand:dakara-foldplus.levelOfParent",
         "onCommand:dakara-foldplus.parent",
         "onCommand:dakara-foldplus.children",
+        "onCommand:dakara-foldplus.regex.unfold",
+        "onCommand:dakara-foldplus.selection.unfold",
         "onCommand:dakara-foldplus.selection",
         "onCommand:dakara-foldplus.selection.exclude",
         "onCommand:dakara-foldplus.cursor.exclude",
@@ -31,6 +34,11 @@
             {
                 "command": "dakara-foldplus.levelAtCursor",
                 "title": "All Same Level as Cursor",
+                "category": "Fold Plus"
+            },
+            {
+                "command": "dakara-foldplus.levelAtCursor.unfold",
+                "title": "Unfold All Same Level as Cursor",
                 "category": "Fold Plus"
             },
             {
@@ -46,6 +54,16 @@
             {
                 "command": "dakara-foldplus.children",
                 "title": "Children",
+                "category": "Fold Plus"
+            },
+            {
+                "command": "dakara-foldplus.regex.unfold",
+                "title": "Unfold All Lines Matching...",
+                "category": "Fold Plus"
+            },
+            {
+                "command": "dakara-foldplus.selection.unfold",
+                "title": "Unfold All with Selected Text",
                 "category": "Fold Plus"
             },
             {
