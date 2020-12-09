@@ -1,3 +1,9 @@
+## 1.5.0
+- New Commands
+  - `Unfold All Lines Matching...` unfold all lines matching a regex
+  - `Unfold All Same Level as Cursor` unfold all lines same level as cursor line
+  - `Unfold All with Selected Text` unfold all lines containing the current selected text
+
 ## 1.4.1
 - Fixed issue with fold by selection when selection contained characters that may be interpreted as regular expression
 

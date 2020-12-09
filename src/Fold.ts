@@ -26,6 +26,17 @@ export function foldLevelOfCursor() {
     foldLevel(textEditor, level, lineOfReferenceForFold, selection)
 }
 
+export function unfoldLevelOfCursor() {
+    const textEditor = vscode.window.activeTextEditor;
+    const selection = textEditor.selection;
+    
+    const lineOfReferenceForFold = whenBlankLineUsePreviousOrNextLine(textEditor, selection.anchor.line)
+    
+    const level = Lines.calculateLineLevel(textEditor, lineOfReferenceForFold);
+    
+    unfoldLevel(textEditor, level, lineOfReferenceForFold, selection)
+}
+
 export function foldChildren() {
     const textEditor = vscode.window.activeTextEditor;
     const selection = textEditor.selection;
@@ -52,27 +63,43 @@ export async function foldLines(foldLines: Array<number>) {
     textEditor.revealRange(textEditor.selection, vscode.TextEditorRevealType.InCenter);
 }  
 
+export async function unfoldLines(foldLines: Array<number>, unfoldRecursively: boolean) {
+    const textEditor = vscode.window.activeTextEditor;
+
+    await unfoldLinesAndParents(foldLines, textEditor, unfoldRecursively)
+    const rangeOfFirstLine = Region.makeRangeLineStart(foldLines[0])
+    textEditor.selection = new vscode.Selection(rangeOfFirstLine.start, rangeOfFirstLine.start)
+    textEditor.revealRange(rangeOfFirstLine, vscode.TextEditorRevealType.InCenter);
+}  
+
 export async function foldAllExcept(excludedLines: Array<number>) {
     const textEditor = vscode.window.activeTextEditor;
     const selection = textEditor.selection;
     await vscode.commands.executeCommand('editor.foldAll');
+    await unfoldLinesAndParents(excludedLines, textEditor, true);
+    
+    textEditor.selection = selection;
+    textEditor.revealRange(textEditor.selection, vscode.TextEditorRevealType.InCenter);
+}
+
+async function unfoldLinesAndParents(requestUnfoldLines: number[], textEditor: vscode.TextEditor, unfoldRecursively: boolean) {
     const linesToUnfold = new Set<number>();
 
-    for (const lineNumber of excludedLines) {
+    for (const lineNumber of requestUnfoldLines) {
         textEditor.selection = new vscode.Selection(lineNumber, 0, lineNumber, 0);
         Lines.findLinesByLevelToRoot(textEditor.document, lineNumber, +textEditor.options.tabSize).forEach(line => {
             linesToUnfold.add(line.lineNumber);
         });
-        await vscode.commands.executeCommand('editor.unfoldRecursively');
+        if (unfoldRecursively)
+            await vscode.commands.executeCommand('editor.unfoldRecursively');
+        else
+            await vscode.commands.executeCommand('editor.unfold');
     }
 
     for (const lineNumber of Array.from(linesToUnfold)) {
         textEditor.selection = new vscode.Selection(lineNumber, 0, lineNumber, 0);
         await vscode.commands.executeCommand('editor.unfold');
     }
-    
-    textEditor.selection = selection;
-    textEditor.revealRange(textEditor.selection, vscode.TextEditorRevealType.InCenter);
 }
 
 /**
@@ -113,6 +140,11 @@ function foldLevel(editor:vscode.TextEditor, level:number, lineOfReferenceForFol
         const linesToFold = linesByLevel(editor, level)
         foldLines(linesToFold)
     }
+}
+
+function unfoldLevel(editor:vscode.TextEditor, level:number, lineOfReferenceForFold:number, originalSelection:vscode.Selection) {
+    const linesToFold = linesByLevel(editor, level)
+    unfoldLines(linesToFold, false)
 }
 
 function linesByLevel(editor:vscode.TextEditor, level: number) {
