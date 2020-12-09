@@ -52,6 +52,8 @@ export function activate(context: vscode.ExtensionContext) {
     Application.registerCommand(context,'dakara-foldplus.regex.unfold', async () => {
         warnFoldStrategy()
         const userInput = await vscode.window.showInputBox({prompt:'regex to unfold lines', value: ''});
+        if (!userInput) return
+        
         const regexUnfold = new RegExp(userInput)
         const foldLines = Lines.findAllLineNumbersContaining(vscode.window.activeTextEditor.document, regexUnfold);
         if (foldLines.length) {
