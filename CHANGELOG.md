@@ -1,3 +1,6 @@
+## 1.5.1
+- Fix issue when no user input entered
+
 ## 1.5.0
 - New Commands
   - `Unfold All Lines Matching...` unfold all lines matching a regex
