@@ -7,7 +7,7 @@ export function foldLevelOfParent() {
     const selection = textEditor.selection;
     const lineOfReferenceForFold = whenBlankLineUsePreviousOrNextLine(textEditor, selection.anchor.line)
     const parentLine = Lines.findNextLineUpSpacedLeft(textEditor.document, lineOfReferenceForFold, +textEditor.options.tabSize);
-    const level = Lines.calculateLineLevel(textEditor, parentLine.lineNumber);
+    const level = Lines.calculateLineTabSpacing(textEditor, parentLine.lineNumber);
 
     textEditor.selection = new vscode.Selection(parentLine.lineNumber, 0, parentLine.lineNumber, 0);
     // vscode.commands.executeCommand('editor.foldLevel' + level)
@@ -21,7 +21,7 @@ export function foldLevelOfCursor() {
     
     const lineOfReferenceForFold = whenBlankLineUsePreviousOrNextLine(textEditor, selection.anchor.line)
     
-    const level = Lines.calculateLineLevel(textEditor, lineOfReferenceForFold);
+    const level = Lines.calculateLineTabSpacing(textEditor, lineOfReferenceForFold);
     
     foldLevel(textEditor, level, lineOfReferenceForFold, selection)
 }
@@ -32,7 +32,7 @@ export function unfoldLevelOfCursor() {
     
     const lineOfReferenceForFold = whenBlankLineUsePreviousOrNextLine(textEditor, selection.anchor.line)
     
-    const level = Lines.calculateLineLevel(textEditor, lineOfReferenceForFold);
+    const level = Lines.calculateLineTabSpacing(textEditor, lineOfReferenceForFold);
     
     unfoldLevel(textEditor, level, lineOfReferenceForFold, selection)
 }
@@ -82,6 +82,8 @@ export async function foldAllExcept(excludedLines: Array<number>) {
     textEditor.revealRange(textEditor.selection, vscode.TextEditorRevealType.InCenter);
 }
 
+// consider doing the inverse for performance
+// unfold all, then fold all except the lines to unfold
 async function unfoldLinesAndParents(requestUnfoldLines: number[], textEditor: vscode.TextEditor, unfoldRecursively: boolean) {
     const linesToUnfold = new Set<number>();
 
@@ -117,8 +119,8 @@ function whenBlankLineUsePreviousOrNextLine(editor:vscode.TextEditor, line:numbe
     const nextLineup   = Lines.findNextLineUp(  editor.document, line, line => !line.isEmptyOrWhitespace)
     const nextLineDown = Lines.findNextLineDown(editor.document, line, line => !line.isEmptyOrWhitespace)
 
-    const lineUpLevel   = Lines.calculateLineLevel(editor, nextLineup.lineNumber)
-    const lineDownLevel = Lines.calculateLineLevel(editor, nextLineDown.lineNumber)
+    const lineUpLevel   = Lines.calculateLineTabSpacing(editor, nextLineup.lineNumber)
+    const lineDownLevel = Lines.calculateLineTabSpacing(editor, nextLineDown.lineNumber)
 
     return lineUpLevel > lineDownLevel ? nextLineup.lineNumber : nextLineDown.lineNumber
 }
@@ -149,7 +151,7 @@ function unfoldLevel(editor:vscode.TextEditor, level:number, lineOfReferenceForF
 
 function linesByLevel(editor:vscode.TextEditor, level: number) {
     const linesToFold = []
-    const levels = Lines.calculateAllLineLevels(editor)
+    const levels = Lines.calculateAllLineTabSpacings(editor)
     levels.forEach((lineLevel, lineNumber) => {
         if (lineLevel === level) {
             linesToFold.push(lineNumber)
