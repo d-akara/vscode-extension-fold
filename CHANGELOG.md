@@ -1,3 +1,6 @@
+## 1.5.2
+- Minor doc update
+
 ## 1.5.1
 - Fix issue when no user input entered
 
