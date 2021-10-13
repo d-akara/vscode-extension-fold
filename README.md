@@ -1,5 +1,7 @@
 # Fold Plus
 
+![ScreenShot](fold-plus-banner.png)
+
 Additional Fold Commands for VS Code
 
 ![ScreenShot](fold-cursor-selected-keep.gif)
